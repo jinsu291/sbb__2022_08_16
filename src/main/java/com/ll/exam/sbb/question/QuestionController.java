@@ -7,8 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.extras.springsecurity5.util.SpringSecurityContextUtils;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.Iterator;
 import java.util.List;
 
 @RequestMapping("/question")
@@ -27,7 +30,11 @@ public class QuestionController {
 
     @GetMapping("/list")
     // 이 자리에 @ResponseBody가 없으면 resources/question_list/question_list.html 파일을 뷰로 삼는다.
-    public String list(Model model, @RequestParam(defaultValue = "0") int page) {
+    public String list(HttpSession session, Model model, @RequestParam(defaultValue = "0") int page) {
+
+        Object o = session.getAttribute("SPRING_SECURITY_CONTEXT");
+        System.out.println(o);
+
         Page<Question> paging = questionService.getList(page);
 
         // 미래에 실행된 question_list.html 에서
