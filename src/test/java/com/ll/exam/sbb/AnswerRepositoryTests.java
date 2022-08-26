@@ -22,7 +22,6 @@ public class AnswerRepositoryTests {
     private QuestionRepository questionRepository;
     @Autowired
     private AnswerRepository answerRepository;
-    private int lastSampleDataId;
 
     @BeforeEach
     void beforeEach() {
@@ -30,18 +29,21 @@ public class AnswerRepositoryTests {
         createSampleData();
     }
 
-    private void clearData() {
+    public static void clearData(AnswerRepository answerRepository, QuestionRepository questionRepository) {
         QuestionRepositoryTests.clearData(questionRepository);
 
-        answerRepository.deleteAll(); // DELETE FROM answer;
+        answerRepository.deleteAll(); // DELETE FROM question;
         answerRepository.truncateTable();
     }
 
-    @Transactional
+    private void clearData() {
+        clearData(answerRepository, questionRepository);
+    }
+
     private void createSampleData() {
         QuestionRepositoryTests.createSampleData(questionRepository);
 
-        //관련 답변이 하나없는 상태에서 쿼리 발생
+        // 관련 답변이 하나없는 상태에서 쿼리 발생
         Question q = questionRepository.findById(1L).get();
 
         Answer a1 = new Answer();
@@ -87,7 +89,7 @@ public class AnswerRepositoryTests {
     @Test
     @Transactional
     @Rollback(false)
-    void 관련된_question_조회 () {
+    void 관련된_question_조회() {
         Answer a = this.answerRepository.findById(1L).get();
         Question q = a.getQuestion();
 
