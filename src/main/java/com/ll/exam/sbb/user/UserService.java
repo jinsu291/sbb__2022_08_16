@@ -1,5 +1,6 @@
 package com.ll.exam.sbb.user;
 
+import com.ll.exam.sbb.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,17 +20,21 @@ public class UserService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
 
-        try{
+        try {
             userRepository.save(user);
-        } catch ( DataIntegrityViolationException e ){
-            if(userRepository.existsByUsername(username)){
+        } catch (DataIntegrityViolationException e) {
+            if (userRepository.existsByUsername(username)) {
                 throw new SignupUsernameDuplicatedException("이미 사용중인 username 입니다.");
-            } else{
+            } else {
                 throw new SignupEmailDuplicatedException("이미 사용중인 email 입니다.");
             }
         }
 
-        this.userRepository.save(user);
+
         return user;
+    }
+
+    public SiteUser getUser(String username) {
+        return this.userRepository.findByUsername(username).orElseThrow(() -> new DataNotFoundException("siteuser not found"));
     }
 }
